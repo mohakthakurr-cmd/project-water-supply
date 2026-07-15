@@ -5,15 +5,13 @@ from datetime import date
 import os
 
 app = Flask(__name__)
-with app.app_context():
-    initialize_database()
+
 
 BASE_FOLDER = os.path.dirname(os.path.abspath(__file__))
 DATABASE = os.path.join(BASE_FOLDER, "water_supply.db")
 import os
 
-if not os.path.exists(DATABASE):
-    initialize_database()
+
 STATUS_PROGRAM = os.path.join(BASE_FOLDER, "water_status")
 
 
@@ -22,6 +20,14 @@ def get_database():
     connection.row_factory = sqlite3.Row
     return connection
 
+def get_tank_status(level):
+    result = subprocess.run(
+        [STATUS_PROGRAM],
+        input=str(level),
+        text=True,
+        capture_output=True
+    )
+    return result.stdout.strip()
 
 def setup_database():
     connection = get_database()
@@ -119,5 +125,4 @@ def submit_feedback():
 
 
 if __name__ == "__main__":
-    initialize_database()
     app.run(debug=True)
