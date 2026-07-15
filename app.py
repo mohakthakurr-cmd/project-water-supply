@@ -41,7 +41,11 @@ def setup_database():
 
     if count == 0:
         connection.executemany(
-            "INSERT INTO wards VALUES (?, ?, ?, ?, ?)",
+    """
+    INSERT INTO wards
+    (ward_id, area_name, zone, supply_days, supply_time)
+    VALUES (?, ?, ?, ?, ?)
+    """,
             [
                 (1, "Sanjauli", "North", "Monday and Thursday", "6:00 AM - 8:00 AM"),
                 (2, "Mall Road", "Central", "Tuesday and Friday", "7:00 AM - 9:00 AM"),
