@@ -9,7 +9,6 @@ app = Flask(__name__)
 
 BASE_FOLDER = os.path.dirname(os.path.abspath(__file__))
 DATABASE = os.path.join(BASE_FOLDER, "water_supply.db")
-import os
 
 
 STATUS_PROGRAM = os.path.join(BASE_FOLDER, "water_status")
@@ -41,11 +40,11 @@ def setup_database():
 
     if count == 0:
         connection.executemany(
-    """
-    INSERT INTO wards
-    (ward_id, area_name, zone, supply_days, supply_time)
-    VALUES (?, ?, ?, ?, ?)
-    """,
+            """
+            INSERT INTO wards
+            (ward_id, area_name, zone, supply_days, supply_time)
+            VALUES (?, ?, ?, ?, ?)
+            """,
             [
                 (1, "Sanjauli", "North", "Monday and Thursday", "6:00 AM - 8:00 AM"),
                 (2, "Mall Road", "Central", "Tuesday and Friday", "7:00 AM - 9:00 AM"),
@@ -54,7 +53,11 @@ def setup_database():
         )
 
         connection.executemany(
-            "INSERT INTO tanks (tank_name, ward_id, water_level) VALUES (?, ?, ?)",
+            """
+            INSERT INTO tanks
+            (tank_name, ward_id, water_level)
+            VALUES (?, ?, ?)
+            """,
             [
                 ("Sanjauli Lift Tank", 1, 72),
                 ("Central Storage Tank", 2, 58),
@@ -63,7 +66,11 @@ def setup_database():
         )
 
         connection.execute(
-            "INSERT INTO alerts (ward_id, alert_message) VALUES (?, ?)",
+            """
+            INSERT INTO alerts
+            (ward_id, alert_message)
+            VALUES (?, ?)
+            """,
             (
                 2,
                 "Pipeline maintenance may delay supply by one hour."
@@ -127,6 +134,26 @@ def submit_feedback():
 
     return jsonify({"message": "Feedback submitted successfully!"})
 
+@app.route("/complaints")
+def view_complaints():
+    connection = get_database()
+
+    complaints = connection.execute("""
+        SELECT
+            complaints.complaint_id,
+            complaints.person_name,
+            wards.area_name,
+            complaints.message,
+            complaints.submitted_on
+        FROM complaints
+        JOIN wards
+        ON complaints.ward_id = wards.ward_id
+        ORDER BY complaints.complaint_id DESC
+    """).fetchall()
+
+    connection.close()
+
+    return render_template("complaints.html", complaints=complaints)
 
 if __name__ == "__main__":
     app.run(debug=True)

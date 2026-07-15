@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Complaints Dashboard</title>
+
+    <style>
+
+        body{
+            font-family:Arial,sans-serif;
+            background:#f4f4f4;
+            padding:40px;
+        }
+
+        h1{
+            color:#1565c0;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            background:white;
+        }
+
+        th,td{
+            border:1px solid #ddd;
+            padding:12px;
+            text-align:left;
+        }
+
+        th{
+            background:#1565c0;
+            color:white;
+        }
+
+        tr:nth-child(even){
+            background:#f2f2f2;
+        }
+
+        a{
+            text-decoration:none;
+            background:#1565c0;
+            color:white;
+            padding:10px 20px;
+            border-radius:5px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<a href="/">← Home</a>
+
+<h1>Citizen Complaints</h1>
+
+<table>
+
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Ward</th>
+<th>Complaint</th>
+<th>Date</th>
+</tr>
+
+{% for complaint in complaints %}
+
+<tr>
+<td>{{ complaint.complaint_id }}</td>
+<td>{{ complaint.person_name }}</td>
+<td>{{ complaint.area_name }}</td>
+<td>{{ complaint.message }}</td>
+<td>{{ complaint.submitted_on }}</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+</body>
+</html>
