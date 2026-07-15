@@ -1,11 +1,11 @@
-from flask import Flask, render_template, request, jsonify, redirect
-
+from flask import Flask, render_template, request, jsonify, redirect, session
 import sqlite3
 import subprocess
 from datetime import date
 import os
 
 app = Flask(__name__)
+app.secret_key = "smartwater_admin_2026"
 
 
 BASE_FOLDER = os.path.dirname(os.path.abspath(__file__))
@@ -141,8 +141,35 @@ def submit_feedback():
 
     return jsonify({"message": "Feedback submitted successfully!"})
 
+@app.route("/login", methods=["GET", "POST"])
+def login():
+
+    if request.method == "POST":
+
+        username = request.form["username"]
+        password = request.form["password"]
+
+        if username == "admin" and password == "admin123":
+            session["admin"] = True
+            return redirect("/complaints")
+
+        return render_template(
+            "login.html",
+            error="Invalid username or password"
+        )
+
+    return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/login")
+
 @app.route("/complaints")
 def view_complaints():
+    if not session.get("admin"):
+        return redirect("/login")
+
     connection = get_database()
 
     complaints = connection.execute("""
@@ -172,6 +199,29 @@ def view_complaints():
         pending=pending,
         resolved=resolved
     )
+
+@app.route("/resolve/<int:complaint_id>")
+def resolve_complaint(complaint_id):
+
+    if not session.get("admin"):
+        return redirect("/login")
+
+    connection = get_database()
+
+    connection.execute(
+        """
+        UPDATE complaints
+        SET status = 'Resolved'
+        WHERE complaint_id = ?
+        """,
+        (complaint_id,)
+    )
+
+    connection.commit()
+    connection.close()
+
+    return redirect("/complaints")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
