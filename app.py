@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect
+
 import sqlite3
 import subprocess
 from datetime import date
@@ -121,13 +122,19 @@ def submit_feedback():
     connection = get_database()
 
     connection.execute(
-        """
-        INSERT INTO complaints
-        (person_name, ward_id, message, submitted_on)
-        VALUES (?, ?, ?, ?)
-        """,
-        (name, ward_id, message, date.today().isoformat())
+    """
+    INSERT INTO complaints
+    (person_name, ward_id, message, submitted_on, status)
+    VALUES (?, ?, ?, ?, ?)
+    """,
+    (
+        name,
+        ward_id,
+        message,
+        date.today().isoformat(),
+        "Pending"
     )
+)
 
     connection.commit()
     connection.close()
@@ -144,16 +151,27 @@ def view_complaints():
             complaints.person_name,
             wards.area_name,
             complaints.message,
-            complaints.submitted_on
+            complaints.submitted_on,
+            complaints.status
         FROM complaints
         JOIN wards
         ON complaints.ward_id = wards.ward_id
         ORDER BY complaints.complaint_id DESC
     """).fetchall()
 
+    total = len(complaints)
+    pending = sum(1 for c in complaints if c["status"] == "Pending")
+    resolved = sum(1 for c in complaints if c["status"] == "Resolved")
+
     connection.close()
 
-    return render_template("complaints.html", complaints=complaints)
+    return render_template(
+        "complaints.html",
+        complaints=complaints,
+        total=total,
+        pending=pending,
+        resolved=resolved
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)

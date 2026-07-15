@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS complaints (
     person_name TEXT NOT NULL,
     ward_id INTEGER NOT NULL,
     message TEXT NOT NULL,
-    submitted_on TEXT NOT NULL
+    submitted_on TEXT NOT NULL,
+    status TEXT DEFAULT 'Pending'
 );
 
 CREATE TABLE IF NOT EXISTS tanks (

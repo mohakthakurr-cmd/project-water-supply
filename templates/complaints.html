@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Complaints Dashboard</title>
+    <title>Admin Complaint Dashboard</title>
 
     <style>
 
@@ -13,6 +13,33 @@
 
         h1{
             color:#1565c0;
+            margin-bottom:25px;
+        }
+
+        .cards{
+            display:flex;
+            gap:20px;
+            margin-bottom:30px;
+        }
+
+        .card{
+            flex:1;
+            background:white;
+            padding:20px;
+            border-radius:10px;
+            text-align:center;
+            box-shadow:0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card h2{
+            margin:0;
+            color:#1565c0;
+        }
+
+        .card p{
+            font-size:30px;
+            font-weight:bold;
+            margin:10px 0 0;
         }
 
         table{
@@ -33,15 +60,30 @@
         }
 
         tr:nth-child(even){
-            background:#f2f2f2;
+            background:#f7f7f7;
         }
 
-        a{
+        .pending{
+            color:#e67e22;
+            font-weight:bold;
+        }
+
+        .resolved{
+            color:green;
+            font-weight:bold;
+        }
+
+        .btn{
             text-decoration:none;
             background:#1565c0;
             color:white;
-            padding:10px 20px;
+            padding:8px 14px;
             border-radius:5px;
+        }
+
+        .home{
+            display:inline-block;
+            margin-bottom:20px;
         }
 
     </style>
@@ -50,28 +92,78 @@
 
 <body>
 
-<a href="/">← Home</a>
+<a href="/" class="btn home">← Home</a>
 
-<h1>Citizen Complaints</h1>
+<h1>Admin Complaint Dashboard</h1>
+
+<div class="cards">
+
+    <div class="card">
+        <h2>Total</h2>
+        <p>{{ total }}</p>
+    </div>
+
+    <div class="card">
+        <h2>Pending</h2>
+        <p>{{ pending }}</p>
+    </div>
+
+    <div class="card">
+        <h2>Resolved</h2>
+        <p>{{ resolved }}</p>
+    </div>
+
+</div>
 
 <table>
 
 <tr>
-<th>ID</th>
-<th>Name</th>
-<th>Ward</th>
-<th>Complaint</th>
-<th>Date</th>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Ward</th>
+    <th>Complaint</th>
+    <th>Date</th>
+    <th>Status</th>
+    <th>Action</th>
 </tr>
 
 {% for complaint in complaints %}
 
 <tr>
+
 <td>{{ complaint.complaint_id }}</td>
 <td>{{ complaint.person_name }}</td>
 <td>{{ complaint.area_name }}</td>
 <td>{{ complaint.message }}</td>
 <td>{{ complaint.submitted_on }}</td>
+
+<td>
+
+{% if complaint.status == "Pending" %}
+<span class="pending">🟡 Pending</span>
+{% else %}
+<span class="resolved">🟢 Resolved</span>
+{% endif %}
+
+</td>
+
+<td>
+
+{% if complaint.status == "Pending" %}
+
+<a class="btn"
+href="/resolve/{{ complaint.complaint_id }}">
+Resolve
+</a>
+
+{% else %}
+
+✔
+
+{% endif %}
+
+</td>
+
 </tr>
 
 {% endfor %}
