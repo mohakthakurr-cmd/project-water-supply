@@ -5,9 +5,15 @@ from datetime import date
 import os
 
 app = Flask(__name__)
+with app.app_context():
+    initialize_database()
 
 BASE_FOLDER = os.path.dirname(os.path.abspath(__file__))
 DATABASE = os.path.join(BASE_FOLDER, "water_supply.db")
+import os
+
+if not os.path.exists(DATABASE):
+    initialize_database()
 STATUS_PROGRAM = os.path.join(BASE_FOLDER, "water_status")
 
 
@@ -22,6 +28,8 @@ def setup_database():
 
     with open(os.path.join(BASE_FOLDER, "schema.sql"), "r") as file:
         connection.executescript(file.read())
+
+    connection.commit()
 
     count = connection.execute("SELECT COUNT(*) FROM wards").fetchone()[0]
 
@@ -46,23 +54,15 @@ def setup_database():
 
         connection.execute(
             "INSERT INTO alerts (ward_id, alert_message) VALUES (?, ?)",
-            (2, "Pipeline maintenance may delay supply by one hour.")
+            (
+                2,
+                "Pipeline maintenance may delay supply by one hour."
+            )
         )
 
         connection.commit()
 
     connection.close()
-
-
-def get_tank_status(level):
-    result = subprocess.run(
-        [STATUS_PROGRAM],
-        input=str(level),
-        text=True,
-        capture_output=True
-    )
-
-    return result.stdout.strip()
 
 
 setup_database()
@@ -119,4 +119,5 @@ def submit_feedback():
 
 
 if __name__ == "__main__":
+    initialize_database()
     app.run(debug=True)
