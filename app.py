@@ -2,12 +2,13 @@ from flask import Flask, render_template, request, jsonify
 import sqlite3
 import subprocess
 from datetime import date
+import os
 
 app = Flask(__name__)
-import os
 
 BASE_FOLDER = os.path.dirname(os.path.abspath(__file__))
 DATABASE = os.path.join(BASE_FOLDER, "water_supply.db")
+STATUS_PROGRAM = os.path.join(BASE_FOLDER, "water_status")
 
 
 def get_database():
@@ -19,7 +20,7 @@ def get_database():
 def setup_database():
     connection = get_database()
 
-    with open("schema.sql", "r") as file:
+    with open(os.path.join(BASE_FOLDER, "schema.sql"), "r") as file:
         connection.executescript(file.read())
 
     count = connection.execute("SELECT COUNT(*) FROM wards").fetchone()[0]
@@ -55,13 +56,16 @@ def setup_database():
 
 def get_tank_status(level):
     result = subprocess.run(
-        [os.path.join(BASE_FOLDER, "water_status")],
+        [STATUS_PROGRAM],
         input=str(level),
         text=True,
         capture_output=True
     )
 
     return result.stdout.strip()
+
+
+setup_database()
 
 
 @app.route("/")
@@ -115,5 +119,4 @@ def submit_feedback():
 
 
 if __name__ == "__main__":
-    setup_database()
     app.run(debug=True)
