@@ -94,6 +94,10 @@ def home():
     tanks = connection.execute("SELECT * FROM tanks").fetchall()
     alerts = connection.execute("SELECT * FROM alerts").fetchall()
 
+    complaints_count = connection.execute(
+        "SELECT COUNT(*) FROM complaints"
+    ).fetchone()[0]
+
     connection.close()
 
     tank_data = []
@@ -106,11 +110,12 @@ def home():
         })
 
     return render_template(
-        "index.html",
-        wards=wards,
-        tanks=tank_data,
-        alerts=alerts
-    )
+    "index.html",
+    wards=wards,
+    tanks=tank_data,
+    alerts=alerts,
+    complaints_count=complaints_count
+)
 
 
 @app.route("/submit-feedback", methods=["POST"])

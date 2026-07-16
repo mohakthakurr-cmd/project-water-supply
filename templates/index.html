@@ -1,10 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shimla Water Portal</title>
+
+  <title>Shimla Water Services</title>
 
   <link
     rel="stylesheet"
@@ -13,140 +13,325 @@
 </head>
 
 <body>
-  <header>
-    <h2>💧 Shimla Water</h2>
 
-    <nav>
-        <a href="#schedule">Schedule</a>
-        <a href="#services">Services</a>
-        <a href="#feedback">Feedback</a>
-        <a href="/login">Admin Login</a>
+
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Shimla Water Services home">
+      <span class="brand-mark">S</span>
+
+      <span>
+        <strong>Shimla Water</strong>
+        <small>Citizen Service Portal</small>
+      </span>
+    </a>
+
+    <nav class="main-nav" aria-label="Primary navigation">
+      <a href="#schedule">Schedule</a>
+      <a href="#services">Services</a>
+      <a href="#feedback">Feedback</a>
     </nav>
-</header>
 
-  <section class="hero">
-    <p class="small-title">SHIMLA CITY WATER INFORMATION PORTAL</p>
+<a class="admin-link" href="/login">Admin login</a>
 
-    <h1>
-      Water information<br>
-      <span>for every ward.</span>
-    </h1>
+<button
+  id="themeToggle"
+  class="theme-toggle"
+  type="button"
+  aria-label="Switch colour mode"
+>
+  <span class="theme-icon">◐</span>
+  <span class="theme-label">Mode</span>
+</button>
+  </header>
 
-    <p>
-      Check water supply timings, emergency alerts, tanker availability,
-      and tank water levels.
-    </p>
-
-    <a href="#schedule" class="button">Find My Schedule →</a>
-  </section>
-
-  <section class="alert">
-    <strong>⚠ Maintenance Update:</strong>
-
-    {% for alert in alerts %}
-      {{ alert.alert_message }}
-    {% endfor %}
-  </section>
-
-  <section id="schedule" class="section">
-    <p class="small-title">WATER SUPPLY SCHEDULE</p>
-    <h2>When is water coming?</h2>
-    <p>Search using your area name or ward number.</p>
-
-    <div class="search-box">
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="Example: Mall Road or 2"
-      >
-
-      <button onclick="findSchedule()">Search</button>
-    </div>
-
-    <div id="result"></div>
-  </section>
-
-  <section id="services" class="section services">
-    <p class="small-title">SERVICE OVERVIEW</p>
-    <h2>Water services at a glance</h2>
-
-    <div class="cards">
-      <div class="card">
-        <h3>⚠ Emergency Alerts</h3>
-
-        {% for alert in alerts %}
-          <p>{{ alert.alert_message }}</p>
-        {% endfor %}
-
-        <p class="muted">Updated today</p>
+  <main id="top">
+    <section class="status-strip">
+      <div class="status-content">
+        <span class="status-dot"></span>
+        <span>Service information portal</span>
+        <span class="status-separator">•</span>
+        <span id="lastUpdated">Updated today</span>
       </div>
 
-      <div class="card">
-        <h3>🚚 Tanker Supply</h3>
-        <p><b>Sanjauli:</b> Available</p>
-        <p><b>Mall Road:</b> Limited availability</p>
-        <p>Contact: 0177-100-2001</p>
-      </div>
+      <a href="#feedback">Report an issue →</a>
+    </section>
 
-      <div class="card">
-        <h3>💧 Tank Levels</h3>
+    <section class="hero-section">
+      <div class="hero-copy">
+        <p class="eyebrow">SHIMLA CITY · WATER SERVICES</p>
 
-        {% for tank in tanks %}
-          <p>
-            {{ tank.name }}:
-            <b>{{ tank.level }}% — {{ tank.status }}</b>
-          </p>
+        <h1>
+          Clear service information.
+          <span>Less uncertainty.</span>
+        </h1>
 
-          <div class="bar">
-            <div
-              class="fill"
-              style="width: {{ tank.level }}%"
-            ></div>
+        <p class="hero-description">
+          Find ward supply timings, check current notices, and share
+          feedback with the water-services team.
+        </p>
+
+        <div class="hero-stats">
+          <div>
+            <strong>3</strong>
+            <span>wards online</span>
           </div>
-        {% endfor %}
+
+          <div>
+            <strong>24/7</strong>
+            <span>information access</span>
+          </div>
+
+          <div>
+            <strong>100%</strong>
+            <span>student-built project</span>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
 
-  <section id="feedback" class="feedback">
+      <aside class="service-summary">
+        <div class="summary-top">
+          <span class="summary-label">SYSTEM STATUS</span>
+          <span class="summary-badge">Operational</span>
+        </div>
+
+        <h2>Today’s service view</h2>
+
+        <div class="summary-row">
+          <span>Scheduled service</span>
+          <strong>3 wards</strong>
+        </div>
+
+        <div class="summary-row">
+          <span>Active notices</span>
+          <strong>{{ alerts|length }}</strong>
+        </div>
+
+        <div class="summary-row">
+          <span>Storage tanks tracked</span>
+          <strong>{{ tanks|length }}</strong>
+        </div>
+
+        <p class="summary-footnote">
+          This portal displays the latest available project data.
+        </p>
+      </aside>
+    </section>
+
+    <section id="schedule" class="section schedule-section">
+      <div class="section-heading">
+        <p class="eyebrow">SCHEDULE LOOKUP</p>
+        <h2>Find supply details for your ward.</h2>
+        <p>
+          Search by your area name or ward number to see the scheduled
+          supply days and time.
+        </p>
+      </div>
+
+      <div class="search-panel">
+        <label for="searchInput">Ward number or area</label>
+
+        <div class="search-row">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="For example: Mall Road or 2"
+            autocomplete="off"
+          >
+
+          <button id="searchButton" type="button" onclick="findSchedule()">
+            <span class="button-text">Find schedule</span>
+            <span class="button-loader"></span>
+          </button>
+        </div>
+
+        <p class="search-help">
+          Available sample areas: Sanjauli, Mall Road, and Summer Hill.
+        </p>
+      </div>
+
+      <div id="result" class="schedule-result" aria-live="polite"></div>
+    </section>
+
+    <section id="services" class="section service-section">
+      <div class="section-heading service-heading">
+        <p class="eyebrow">SERVICE DASHBOARD</p>
+        <h2>Current service information.</h2>
+        <p>
+          A simple overview of notices, tanker details, and storage levels.
+        </p>
+      </div>
+
+      <div class="dashboard-grid">
+        <article class="dashboard-card notice-card">
+          <div class="card-heading">
+            <div>
+              <p class="card-label">SERVICE NOTICE</p>
+              <h3>Maintenance updates</h3>
+            </div>
+
+            <span class="card-index">01</span>
+          </div>
+
+          <div class="notice-list">
+            {% for alert in alerts %}
+              <div class="notice-item">
+                <span class="notice-marker"></span>
+
+                <div>
+                  <strong>Scheduled maintenance</strong>
+                  <p>{{ alert.alert_message }}</p>
+                </div>
+              </div>
+            {% else %}
+              <p class="empty-state">No active service notices.</p>
+            {% endfor %}
+          </div>
+
+          <span class="card-note">Review notices before planning water use.</span>
+        </article>
+
+        <article class="dashboard-card tanker-card">
+          <div class="card-heading">
+            <div>
+              <p class="card-label">TANKER SUPPORT</p>
+              <h3>Alternative supply</h3>
+            </div>
+
+            <span class="card-index">02</span>
+          </div>
+
+          <div class="tanker-table">
+            <div class="tanker-row tanker-head">
+              <span>Area</span>
+              <span>Availability</span>
+            </div>
+
+            <div class="tanker-row">
+              <strong>Sanjauli</strong>
+              <span class="availability available">Available</span>
+            </div>
+
+            <div class="tanker-row">
+              <strong>Mall Road</strong>
+              <span class="availability limited">Limited</span>
+            </div>
+          </div>
+
+          <a class="support-link" href="tel:01771002001">
+            Supply desk: 0177-100-2001
+          </a>
+        </article>
+
+        <article class="dashboard-card tank-card">
+          <div class="card-heading">
+            <div>
+              <p class="card-label">STORAGE MONITOR</p>
+              <h3>Tank levels</h3>
+            </div>
+
+            <span class="card-index">03</span>
+          </div>
+
+          <div class="tank-list">
+            {% for tank in tanks %}
+              <div class="tank-item">
+                <div class="tank-meta">
+                  <span>{{ tank.name }}</span>
+
+                  <strong>{{ tank.level }}%</strong>
+                </div>
+
+                <div class="progress-track">
+                  <span
+                    class="progress-fill status-{{ tank.status|lower }}"
+                    style="width: {{ tank.level }}%"
+                  ></span>
+                </div>
+
+                <div class="tank-status">
+                  <span>{{ tank.status }} storage level</span>
+                  <span>Source: lift tank</span>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="feedback" class="feedback-section">
+      <div class="feedback-copy">
+        <p class="eyebrow">CITIZEN FEEDBACK</p>
+        <h2>Help us identify service issues.</h2>
+        <p>
+          Submit a short complaint or feedback message. Your response is
+          recorded in the project database.
+        </p>
+
+        <div class="feedback-points">
+          <span>✓ Simple ward selection</span>
+          <span>✓ Database-backed submission</span>
+          <span>✓ Clear confirmation message</span>
+        </div>
+      </div>
+
+      <form id="feedbackForm" class="feedback-form">
+        <div class="form-row">
+          <label>
+            Your name
+
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Enter your name"
+              required
+            >
+          </label>
+
+          <label>
+            Ward
+
+            <select id="ward" name="ward_id" required>
+              <option value="">Select ward</option>
+              <option value="1">Ward 1 — Sanjauli</option>
+              <option value="2">Ward 2 — Mall Road</option>
+              <option value="3">Ward 3 — Summer Hill</option>
+            </select>
+          </label>
+        </div>
+
+        <label>
+          Complaint or feedback
+
+          <textarea
+            id="message"
+            name="message"
+            rows="5"
+            placeholder="Describe the issue or share your feedback..."
+            required
+          ></textarea>
+        </label>
+
+        <div class="form-footer">
+          <button id="feedbackButton" type="submit">
+            <span class="button-text">Submit feedback</span>
+            <span class="button-loader"></span>
+          </button>
+
+          <p id="feedbackMessage" aria-live="polite"></p>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
     <div>
-      <p class="small-title">HELP US IMPROVE</p>
-      <h2>Complaint or feedback</h2>
-      <p>Share your issue with the water-supply team.</p>
+      <strong>Shimla Water Services</strong>
+      <span>Student civic-tech project</span>
     </div>
 
-    <form onsubmit="submitFeedback(event)">
-      <input
-        type="text"
-        id="name"
-        name="name"
-        placeholder="Your name"
-        required
-      >
-
-      <select id="ward" name="ward_id" required>
-        <option value="">Select your ward</option>
-        <option value="1">Ward 1 — Sanjauli</option>
-        <option value="2">Ward 2 — Mall Road</option>
-        <option value="3">Ward 3 — Summer Hill</option>
-      </select>
-
-      <textarea
-        id="message"
-        name="message"
-        placeholder="Write your complaint or feedback"
-        required
-      ></textarea>
-
-      <button type="submit">Submit Feedback</button>
-
-      <p id="feedbackMessage"></p>
-    </form>
-  </section>
-
-  <footer>
-    <p>💧 Shimla Water Portal</p>
-    <p>Mohak Thakur SJPNL project</p>
+    <p>Built with HTML, CSS, JavaScript, Python, SQLite, and C++.</p>
   </footer>
 
   <script src="{{ url_for('static', filename='script.js') }}"></script>
